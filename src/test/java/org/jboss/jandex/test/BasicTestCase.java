@@ -21,7 +21,6 @@ package org.jboss.jandex.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -149,12 +148,15 @@ public class BasicTestCase {
     }
 
     public static class NestedTest {
+
+        static Class<?> anonymousStaticClass;
+        Class<?> anonymousInnerClass;
         
         static {
-            new Object() {};
+            anonymousStaticClass = new Object() {}.getClass();
         }
         {
-            new Object() {};
+            anonymousInnerClass = new Object() {}.getClass();
         }
         
         NestedTest(int noAnnotation){}
@@ -260,7 +262,10 @@ public class BasicTestCase {
                 System.out.println("blah");
             }
         };
-
+        NestedTest nestedTest = new NestedTest(0);
+        assertNesting(nestedTest.anonymousInnerClass, ClassInfo.NestingType.ANONYMOUS, true);
+        assertNesting(nestedTest.anonymousStaticClass, ClassInfo.NestingType.ANONYMOUS, true);
+        
         assertNesting(blah.getClass(), ClassInfo.NestingType.ANONYMOUS, true);
     }
     @Test
